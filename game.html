@@ -9,6 +9,10 @@
 
   const cc = console.log
 
+  const ground = 722
+  const heroWidth = 150
+  const heroHeight = 200
+
   const loadImage = url => {
     return new Promise((resolve, reject) => {
       const img = new Image()
@@ -56,24 +60,36 @@
 
   // game objects
   let hero = {
-    topSpeed: 100, // movement in pixels per second
-    jumpSpeed: 0,
+    topSpeed: 15, // movement in pixels per second
+    jumpSpeed: 25,
+    jumpWaitTime: 5,
 
     x: 0,
     vx: 2,
-    ax: .5,
+    ax: 1,
 
     y: 722,
     vy: 2,
-    ay: .5
-    
+    ay: 0,
+    ywait: 0
   }
 
   // handle keyboard controls
-  var keysDown = {}
+  const keysDown = {}
+  let jumped = false
+  let goingup = false
 
   window.addEventListener('keydown', (e) => {
-    keysDown[e.keyCode] = true
+    if (e.keyCode === 38 && !jumped && hero.ywait <= 0) {
+      jumped = true
+      goingup = true
+      hero.ay = hero.jumpSpeed
+      hero.ywait = 0
+    } else {
+      keysDown[e.keyCode] = true
+    }
+    hero.ywait--
+
   }, false)
 
   window.addEventListener('keyup', (e) => {
@@ -83,7 +99,33 @@
   //update game object
   const update = (modifier) => {
 
+    if (jumped) {
+      cc('aa')
+      if (goingup) {
+        if (hero.ay < 1) {
+          goingup = false
+          hero.ay = -1
+        }
+        hero.ay /= 2
+      } else {
+        hero.ay *= 1.5;
 
+        if (hero.y >= ground) {
+          jumped = false
+          hero.ay = 0
+          hero.vy = 0
+          hero.y = ground
+          hero.ywait = hero.jumpWaitTime;
+        }
+      }
+
+      hero.vy += hero.ay
+      hero.y -= hero.vy
+      hero.y = Math.min(ground, hero.y)
+      cc(hero.y)
+    }
+
+    // if (40 in keysDown) {}
 
     if (37 in keysDown) { // Player holding left
       if (Math.abs(hero.vx) < hero.topSpeed) {
@@ -106,7 +148,7 @@
 
     hero.x += hero.vx
     hero.x = Math.max(hero.x, 0)
-    hero.x = Math.min(hero.x, fgCanvas.width - 150)
+    hero.x = Math.min(hero.x, fgCanvas.width - heroWidth)
   }
 
   const render = function() {
@@ -115,8 +157,9 @@
     }
 
     if (heroImage) {
-      fgCtx.clearRect(hero.x - 100, hero.y - 100, 250, 300)
-      fgCtx.drawImage(heroImage, hero.x, hero.y, 150, 200)
+      // fgCtx.clearRect(hero.x - 50, hero.y - 50, heroWidth + 500, heroHeight + 500)
+      fgCtx.clearRect(0,0, fgCanvas.width, fgCanvas.height)
+      fgCtx.drawImage(heroImage, hero.x, hero.y, heroWidth, heroHeight)
     }
   }
 
