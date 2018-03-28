@@ -92,12 +92,15 @@
   const update = (modifier) => {
 
     if (37 in keysDown) { // Player holding left
-
-      hero.x -= modifier + hero.runSpeed * modifier
+      if (hero.x > 0) {
+        hero.x -= modifier + hero.runSpeed * modifier
+      }
     }
 
     if (39 in keysDown) { // Player holding right
-      hero.x += modifier + hero.runSpeed * modifier
+      if (hero.x + 150 < fgCanvas.width) {
+        hero.x += modifier + hero.runSpeed * modifier
+      }
     }
   }
 
