@@ -18,13 +18,6 @@
     })
   }
 
-  // hero constants
-  const physics = {
-    topSpeed: 256,
-    runAcceleration: 10,
-    jumpAcceleration: 10,
-  }
-
   // create background canvas
   const bgCanvas = document.createElement('canvas')
   const bgCtx = bgCanvas.getContext('2d')
@@ -61,20 +54,19 @@
     // fgCtx.drawImage(heroImage, hero.x, hero.y);
   })
 
-  // hero image
-  // let heroImage = new Image()
-  // bgImage.onload = function() {
-  //   cc('hi2')
-  //   ctx.drawImage(heroImage, hero.x, hero.y);
-  // }
-  // heroImage.src = 'img/hero.gif'
-
   // game objects
   let hero = {
-    runSpeed: 0, // movement in pixels per second
+    topSpeed: 100, // movement in pixels per second
     jumpSpeed: 0,
+
     x: 0,
-    y: 722
+    vx: 2,
+    ax: .5,
+
+    y: 722,
+    vy: 2,
+    ay: .5
+    
   }
 
   // handle keyboard controls
@@ -91,17 +83,30 @@
   //update game object
   const update = (modifier) => {
 
+
+
     if (37 in keysDown) { // Player holding left
-      if (hero.x > 0) {
-        hero.x -= modifier + hero.runSpeed * modifier
+      if (Math.abs(hero.vx) < hero.topSpeed) {
+        hero.vx -= hero.ax
       }
     }
 
     if (39 in keysDown) { // Player holding right
-      if (hero.x + 150 < fgCanvas.width) {
-        hero.x += modifier + hero.runSpeed * modifier
+      if (Math.abs(hero.vx) < hero.topSpeed) {
+        hero.vx += hero.ax
       }
     }
+
+    if (Object.keys(keysDown).length === 0) {
+      hero.vx /= 1.2;
+      if (Math.abs(hero.vx) < 1) {
+        hero.vx = 0
+      }
+    }
+
+    hero.x += hero.vx
+    hero.x = Math.max(hero.x, 0)
+    hero.x = Math.min(hero.x, fgCanvas.width - 150)
   }
 
   const render = function() {
