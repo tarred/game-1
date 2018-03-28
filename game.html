@@ -54,7 +54,7 @@
   })
 
   let heroImage;
-  loadImage('img/hero.gif')
+  loadImage('img/hero.png')
   .then(hrImg => {
     heroImage = hrImg;
     // cc('h2')
@@ -74,7 +74,7 @@
     runSpeed: 0, // movement in pixels per second
     jumpSpeed: 0,
     x: 0,
-    y: 750
+    y: 722
   }
 
   // handle keyboard controls
@@ -93,11 +93,11 @@
 
     if (37 in keysDown) { // Player holding left
 
-      hero.x -= modifier + hero.runSpeed * modifier;
+      hero.x -= modifier + hero.runSpeed * modifier
     }
 
     if (39 in keysDown) { // Player holding right
-      hero.x += modifier + hero.runSpeed * modifier;
+      hero.x += modifier + hero.runSpeed * modifier
     }
   }
 
@@ -107,7 +107,8 @@
     }
 
     if (heroImage) {
-      fgCtx.drawImage(heroImage, hero.x, hero.y);
+      fgCtx.clearRect(hero.x - 100, hero.y - 100, 250, 300)
+      fgCtx.drawImage(heroImage, hero.x, hero.y, 150, 200)
     }
   }
 
