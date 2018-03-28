@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+  </style>
+</head>
+<body>
+<script>
+
+  const cc = console.log
+
+  const loadImage = url => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => resolve(img)
+      img.onerror = () => reject()
+      img.src = url
+    })
+  }
+
+  // hero constants
+  const physics = {
+    topSpeed: 256,
+    runAcceleration: 10,
+    jumpAcceleration: 10,
+  }
+
+  // create background canvas
+  const bgCanvas = document.createElement('canvas')
+  const bgCtx = bgCanvas.getContext('2d')
+  bgCanvas.width = 1920
+  bgCanvas.height = 1200
+  bgCanvas.style.position = 'absolute'
+  bgCanvas.style.top = 0
+  bgCanvas.style.left = 0
+  document.body.appendChild(bgCanvas)
+
+  // create foreground canvas
+  const fgCanvas = document.createElement('canvas')
+  const fgCtx = fgCanvas.getContext('2d')
+  fgCanvas.width = 1920
+  fgCanvas.height = 1200
+  fgCanvas.style.position = 'absolute'
+  fgCanvas.style.top = 0
+  fgCanvas.style.left = 0
+  document.body.appendChild(fgCanvas)
+
+  // background image
+  let backgroundImage;
+  loadImage('img/background.png')
+  .then(bgImg => {
+    backgroundImage = bgImg
+    // bgCtx.drawImage(backgroundImage, 0, 0)
+  })
+
+  let heroImage;
+  loadImage('img/hero.gif')
+  .then(hrImg => {
+    heroImage = hrImg;
+    // cc('h2')
+    // fgCtx.drawImage(heroImage, hero.x, hero.y);
+  })
+
+  // hero image
+  // let heroImage = new Image()
+  // bgImage.onload = function() {
+  //   cc('hi2')
+  //   ctx.drawImage(heroImage, hero.x, hero.y);
+  // }
+  // heroImage.src = 'img/hero.gif'
+
+  // game objects
+  let hero = {
+    runSpeed: 0, // movement in pixels per second
+    jumpSpeed: 0,
+    x: 0,
+    y: 750
+  }
+
+  // handle keyboard controls
+  var keysDown = {}
+
+  window.addEventListener('keydown', (e) => {
+    keysDown[e.keyCode] = true
+  }, false)
+
+  window.addEventListener('keyup', (e) => {
+    delete keysDown[e.keyCode]
+  }, false)
+
+  //update game object
+  const update = (modifier) => {
+
+    if (37 in keysDown) { // Player holding left
+
+      hero.x -= modifier + hero.runSpeed * modifier;
+    }
+
+    if (39 in keysDown) { // Player holding right
+      hero.x += modifier + hero.runSpeed * modifier;
+    }
+  }
+
+  const render = function() {
+    if (backgroundImage) {
+      bgCtx.drawImage(backgroundImage, 0, 0)
+    }
+
+    if (heroImage) {
+      fgCtx.drawImage(heroImage, hero.x, hero.y);
+    }
+  }
+
+  let main = function() {
+    // console.log(hero.x)
+    update(10)
+    render(10)
+    requestAnimationFrame(main)
+  }
+
+  main()
+
+</script>
+</body>
+</html>
