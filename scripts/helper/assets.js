@@ -1,15 +1,12 @@
 define(() => {
   return {
     canvas: {
-      width: 1920,
+      width: 1520,
       height: 1200
     },
     physics: {
-      env: {
-        gravity: 9.5
-      },
       hero: {
-        topSpeed: 13, // movement in pixels per second
+        topSpeed: 20, // movement in pixels per second
         jumpSpeed: -100, // higher, jump higher
       }
     },
@@ -19,11 +16,11 @@ define(() => {
 
       x: 100,
       vx: 0,
-      ax: 2,
+      ax: 5,
 
-      y: 722,
+      y: 0,
       vy: 0,
-      ay: 0
+      ay: 5.5
 
     },
     blocks: [
