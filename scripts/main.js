@@ -41,11 +41,10 @@ const heroJumpable = () => {
 
   for(var i = 0; i < presets.blocks.length; i++) {
     const block = presets.blocks[i]
-    const nextX = hero.x + hero.vx
     const nextY = hero.y + hero.vy + hero.ay
 
-    if (nextX < block.x + block.width &&
-       nextX + hero.width > block.x &&
+    if (hero.x < block.x + block.width &&
+       hero.x + hero.width > block.x &&
        nextY < block.y + block.height &&
        hero.height + nextY >= block.y) {
          return true

@@ -16,7 +16,7 @@ define(() => {
       }
     },
     hero: {
-      width: 70,
+      width: 50,
       height: 70,
 
       x: 100,
