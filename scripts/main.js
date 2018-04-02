@@ -8,6 +8,7 @@ let collisionDirection = {};
 let step;
 let pause = false;
 let jumped = false;
+let jumpReleased = true
 
 const con = console.log
 
@@ -35,26 +36,35 @@ requirejs(['helper/util', 'helper/assets'], (util, assets) => {
 
 })
 
+const heroJumpable = () => {
+  if (jumped || !jumpReleased) { return false }
+
+  for(var i = 0; i < presets.blocks.length; i++) {
+    const block = presets.blocks[i]
+    const nextX = hero.x + hero.vx
+    const nextY = hero.y + hero.vy + hero.ay
+
+    if (nextX < block.x + block.width &&
+       nextX + hero.width > block.x &&
+       nextY < block.y + block.height &&
+       hero.height + nextY >= block.y) {
+         return true
+    }
+  }
+
+  return false
+}
 
 // handle keyboard controls
 const keysDown = {}
 
 window.addEventListener('keydown', (e) => {
-  if (e.keyCode === 13) {
-    if (!pause) {
-      cancelAnimationFrame(step)
-      return
-    } else {
-      step = requestAnimationFrame(main)
-      reqFrameCount = 1
-    }
-  }
-
-  if (e.keyCode === 38 && !jumped) {
+  if (e.keyCode === 38 && heroJumpable()) {
     // console.log('jmp')
     hero.vy = presets.physics.hero.jumpSpeed
-    jumped = true;
-    reqFrameCount++;
+    jumped = true
+    jumpReleased = false
+    reqFrameCount++
     step = requestAnimationFrame(main)
   } else {
     keysDown[e.keyCode] = true
@@ -63,6 +73,9 @@ window.addEventListener('keydown', (e) => {
 }, false)
 
 window.addEventListener('keyup', (e) => {
+  if (e.keyCode === 38) {
+    jumpReleased = true
+  }
   delete keysDown[e.keyCode]
 }, false)
 
@@ -175,6 +188,8 @@ const renderOnce = () => {
 
 const render = () => {
   if (heroImage) {
+    // con(hero.x)
+    // con(hero.y)
     foreground.ctx.clearRect(0,0, presets.canvas.width, presets.canvas.height)
     foreground.ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height)
   }

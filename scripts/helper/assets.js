@@ -12,11 +12,11 @@ define(() => {
     },
     characters: {
       hero: {
-        source: 'img/hero.gif',
+        source: 'img/hero.png',
       }
     },
     hero: {
-      width: 50,
+      width: 70,
       height: 70,
 
       x: 100,
