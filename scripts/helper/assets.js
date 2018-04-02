@@ -37,8 +37,8 @@ define(() => {
       },
       { // box 2
         x: 650,
-        y: 400,
-        height: 50,
+        y: 350,
+        height: 100,
         width: 200
       },
       { // ground

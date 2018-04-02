@@ -9,7 +9,7 @@ let step;
 let pause = false;
 let jumped = false;
 let jumpReleased = true
-
+const keysDown = {}
 const con = console.log
 
 requirejs(['helper/util', 'helper/assets'], (util, assets) => {
@@ -54,8 +54,7 @@ const heroJumpable = () => {
   return false
 }
 
-// handle keyboard controls
-const keysDown = {}
+
 
 window.addEventListener('keydown', (e) => {
   if (e.keyCode === 38 && heroJumpable()) {
@@ -125,7 +124,7 @@ const collisionDetection = () => {
     const dy = heroCY - blockCY;
 
     if (Math.abs(dx) <= w && Math.abs(dy) <= h) {
-      // console.log('cc')
+      console.log('cc')
       /* collision! */
       const wy = w * dy;
       const hx = h * dx;
