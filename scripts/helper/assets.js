@@ -15,9 +15,16 @@ define(() => {
         source: 'img/hero.png',
       }
     },
+    background: {
+      source: 'img/1-1.gif',
+      x: 0,
+      y: 0,
+      width: 10000,
+      height: 600
+    },
     hero: {
-      width: 50,
-      height: 70,
+      width: 30,
+      height: 45,
 
       x: 100,
       vx: 0,
@@ -30,20 +37,20 @@ define(() => {
     },
     blocks: [
       { // box 1
-        x: 300,
-        y: 450,
-        height: 100,
-        width: 150
+        x: 700,
+        y: 360,
+        height: 50,
+        width: 50
       },
       { // box 2
-        x: 650,
-        y: 350,
-        height: 100,
-        width: 200
+        x: 875,
+        y: 360,
+        height: 50,
+        width: 225
       },
       { // ground
         x: 0,
-        y: 550,
+        y: 540,
         height: 1000,
         width: 2000
       }

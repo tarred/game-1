@@ -2,6 +2,7 @@ let reqFrameCount = 1;
 let background;
 let foreground;
 let heroImage;
+let backgroundImage = {}
 let hero;
 let step;
 let jumped = false;
@@ -22,11 +23,12 @@ requirejs(['helper/util', 'helper/assets', 'helper/physics'], (gUtil, gAssets, g
   addEventListeners()
 
   // load assets
-  util.loadImage(assets.characters.hero.source)
-  .then(hrImg => {
-    heroImage = hrImg;
-
-    // start game
+  Promise.all([
+    util.loadImage(assets.characters.hero.source),
+    util.loadImage(assets.background.source)
+  ]).then((arr) => {
+    heroImage = arr[0]
+    backgroundImage = arr[1]
     main()
   })
 })
@@ -98,6 +100,7 @@ const updatePositions = (collisionDirection) => {
     const diff = assets.canvas.width/2 - (hero.x + hero.vx)
     hero.x = assets.canvas.width/2
 
+    assets.background.x += diff
     assets.blocks.forEach((block) => {
       block.x += diff
     })
@@ -127,11 +130,13 @@ const updatePositions = (collisionDirection) => {
 const render = () => {
   const canvas = assets.canvas
   const hero = assets.hero
+  const backgroundAsset = assets.background
 
   foreground.ctx.clearRect(0,0, canvas.width, canvas.height)
   background.ctx.clearRect(0,0, canvas.width, canvas.height)
 
   foreground.ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height)
+  background.ctx.drawImage(backgroundImage, backgroundAsset.x, backgroundAsset.y, backgroundAsset.width, backgroundAsset.height)
 
   assets.blocks.forEach((block) => {
     background.ctx.strokeRect(block.x, block.y, block.width, block.height)
