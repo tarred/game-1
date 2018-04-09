@@ -2,19 +2,11 @@
 define(() => {
   return {
     collisionDetection: (hero, blocks) => {
-      collisionDirection = {}
+      const collisionDirection = {}
 
       blocks.forEach((block,index) => {
         const nextX = hero.x + hero.vx
         const nextY = hero.y + hero.vy
-
-        // if (nextX < block.x + block.width &&
-        //    nextX + hero.width > block.x &&
-        //    nextY < block.y + block.height &&
-        //    hero.height + nextY >= block.y) {
-        //      console.log('con!!')
-        //    }
-            // collision detected!
 
         const w = (hero.width + block.width)/2
         const h = (hero.height + block.height)/2
@@ -42,19 +34,19 @@ define(() => {
               collisionDirection.right = block.x - hero.width
             }
           } else {
-            if (wy > -hx) {
-              /* on the left */
-              collisionDirection.left = block.x + block.width
-            } else {
+            if (wy <= -hx) {
               /* at the bottom */
               collisionDirection.bottom = block.y - hero.height
               jumped = false;
+            } else {
+              /* on the left */
+              collisionDirection.left = block.x + block.width
             }
           }
         }
 
       })
-
+      // console.log(collisionDirection)
       return collisionDirection
     }
   }

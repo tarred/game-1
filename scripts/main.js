@@ -12,12 +12,29 @@ const con = console.log
 let physics = null
 let util = null
 let assets = null
+let level = null
 
-requirejs(['helper/util', 'helper/assets', 'helper/physics'], (gUtil, gAssets, gPhysics) => {
+const startingX = 4500
+
+const modAssetsPos = () => {
+  assets.background.x -= startingX
+  assets.hero.x -= startingX
+  level.blocks.forEach(block => {
+    block.x -= startingX
+  })
+}
+
+requirejs(
+  ['helper/util', 'helper/assets', 'helper/physics', 'levels/level-1'],
+  (gUtil, gAssets, gPhysics, lvl1) => {
+
 
   assets = gAssets
   physics = gPhysics
   util = gUtil
+  level = lvl1
+
+  modAssetsPos()
 
   createCanvas(assets.canvas, util)
   addEventListeners()
@@ -67,7 +84,8 @@ const addEventListeners = () => {
 
 const heroJumpable = () => {
   const hero = assets.hero
-  const blocks = assets.blocks
+  const blocks = level.blocks
+
   if (jumped || !jumpReleased) { return false }
 
   for(var i = 0; i < blocks.length; i++) {
@@ -101,7 +119,7 @@ const updatePositions = (collisionDirection) => {
     hero.x = assets.canvas.width/2
 
     assets.background.x += diff
-    assets.blocks.forEach((block) => {
+    level.blocks.forEach((block) => {
       block.x += diff
     })
 
@@ -132,13 +150,15 @@ const render = () => {
   const hero = assets.hero
   const backgroundAsset = assets.background
 
+
+  con(hero.x)
   foreground.ctx.clearRect(0,0, canvas.width, canvas.height)
   background.ctx.clearRect(0,0, canvas.width, canvas.height)
 
   foreground.ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height)
   background.ctx.drawImage(backgroundImage, backgroundAsset.x, backgroundAsset.y, backgroundAsset.width, backgroundAsset.height)
 
-  assets.blocks.forEach((block) => {
+  level.blocks.forEach((block) => {
     background.ctx.strokeRect(block.x, block.y, block.width, block.height)
   })
 
@@ -151,7 +171,7 @@ const render = () => {
 
 let main = () => {
   util.readKey(assets.hero)
-  const collisionDirection = physics.collisionDetection(assets.hero, assets.blocks)
+  const collisionDirection = physics.collisionDetection(assets.hero, level.blocks)
   updatePositions(collisionDirection)
   render()
 }
