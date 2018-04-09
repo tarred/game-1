@@ -54,8 +54,6 @@ const heroJumpable = () => {
   return false
 }
 
-
-
 window.addEventListener('keydown', (e) => {
   if (e.keyCode === 38 && heroJumpable()) {
     // console.log('jmp')
@@ -79,11 +77,11 @@ window.addEventListener('keyup', (e) => {
 
 const readKey = () => {
   if (37 in keysDown) { // Player holding left
-    hero.vx = Math.max(hero.vx - hero.ax, -presets.physics.hero.topSpeed)
+    hero.vx -= hero.ax
   }
 
   if (39 in keysDown) { // Player holding right
-    hero.vx = Math.min(hero.vx + hero.ax, presets.physics.hero.topSpeed)
+    hero.vx += hero.ax
   }
 
   if (Object.keys(keysDown).length === 0) {
@@ -124,7 +122,6 @@ const collisionDetection = () => {
     const dy = heroCY - blockCY;
 
     if (Math.abs(dx) <= w && Math.abs(dy) <= h) {
-      console.log('cc')
       /* collision! */
       const wy = w * dy;
       const hx = h * dx;
@@ -154,6 +151,9 @@ const collisionDetection = () => {
 
 //update game object
 const updatePositions = () => {
+  hero.vx = Math.max(hero.vx, -presets.physics.hero.topRunSpeed)
+  hero.vx = Math.min(hero.vx, presets.physics.hero.topRunSpeed)
+
   hero.x = Math.min(presets.canvas.width - hero.width, Math.max(0, hero.x + hero.vx))
   hero.y = Math.min(hero.y + hero.vy)
 

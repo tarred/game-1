@@ -6,8 +6,8 @@ define(() => {
     },
     physics: {
       hero: {
-        topSpeed: 10, // movement in pixels per second
-        jumpSpeed: -50, // higher, jump higher
+        topRunSpeed: 10, // movement in pixels per second
+        jumpSpeed: -45, // higher, jump higher
       }
     },
     characters: {
@@ -25,7 +25,7 @@ define(() => {
 
       y: 0,
       vy: 0,
-      ay: 4.5
+      ay: 4
 
     },
     blocks: [
@@ -45,7 +45,7 @@ define(() => {
         x: 0,
         y: 550,
         height: 1000,
-        width: 1200
+        width: 2000
       }
     ]
   }
