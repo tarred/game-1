@@ -22,6 +22,24 @@ define(() => {
         canvas: canvas,
         ctx: ctx
       }
+    },
+    readKey: (hero) => {
+      if (37 in keysDown) { // Player holding left
+        hero.vx -= hero.ax
+      }
+
+      if (39 in keysDown) { // Player holding right
+        hero.vx += hero.ax
+      }
+
+      if (Object.keys(keysDown).length === 0) {
+        // con(hero.vx)
+        hero.vx /= 1.3;
+        if (Math.abs(hero.vx) < 1) {
+          hero.vx = 0
+        }
+      }
+      hero.vy += hero.ay;
     }
   }
 })

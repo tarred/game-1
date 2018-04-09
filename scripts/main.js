@@ -2,26 +2,24 @@ let reqFrameCount = 1;
 let background;
 let foreground;
 let heroImage;
-let presets;
 let hero;
-let collisionDirection = {};
 let step;
 let jumped = false;
 let jumpReleased = true
 const keysDown = {}
 const con = console.log
+let physics = null
+let util = null
+let assets = null
 
-requirejs(['helper/util', 'helper/assets'], (util, assets) => {
+requirejs(['helper/util', 'helper/assets', 'helper/physics'], (gUtil, gAssets, gPhysics) => {
 
-  presets = assets
-  hero = assets.hero
+  assets = gAssets
+  physics = gPhysics
+  util = gUtil
 
-  // create canvas
-  background = util.createCanvas(presets.canvas.width, presets.canvas.height, 0, 0)
-  document.body.appendChild(background.canvas)
-
-  foreground = util.createCanvas(presets.canvas.width, presets.canvas.height, 0, 0)
-  document.body.appendChild(foreground.canvas)
+  createCanvas(assets.canvas, util)
+  addEventListeners()
 
   // load assets
   util.loadImage(assets.characters.hero.source)
@@ -33,11 +31,45 @@ requirejs(['helper/util', 'helper/assets'], (util, assets) => {
   })
 })
 
+// create canvas
+const createCanvas = (canvas) => {
+  background = util.createCanvas(canvas.width, canvas.height, 0, 0)
+  document.body.appendChild(background.canvas)
+
+  foreground = util.createCanvas(canvas.width, canvas.height, 0, 0)
+  document.body.appendChild(foreground.canvas)
+}
+
+const addEventListeners = () => {
+  window.addEventListener('keydown', (e) => {
+    if (e.keyCode === 38 && heroJumpable()) {
+      // console.log('jmp')
+      assets.hero.vy = assets.physics.hero.jumpSpeed
+      jumped = true
+      jumpReleased = false
+      reqFrameCount++
+      step = requestAnimationFrame(main)
+    } else {
+      keysDown[e.keyCode] = true
+    }
+
+  }, false)
+
+  window.addEventListener('keyup', (e) => {
+    if (e.keyCode === 38) {
+      jumpReleased = true
+    }
+    delete keysDown[e.keyCode]
+  }, false)
+}
+
 const heroJumpable = () => {
+  const hero = assets.hero
+  const blocks = assets.blocks
   if (jumped || !jumpReleased) { return false }
 
-  for(var i = 0; i < presets.blocks.length; i++) {
-    const block = presets.blocks[i]
+  for(var i = 0; i < blocks.length; i++) {
+    const block = blocks[i]
     const nextY = hero.y + hero.vy + hero.ay
 
     if (hero.x < block.x + block.width &&
@@ -51,110 +83,29 @@ const heroJumpable = () => {
   return false
 }
 
-window.addEventListener('keydown', (e) => {
-  if (e.keyCode === 38 && heroJumpable()) {
-    // console.log('jmp')
-    hero.vy = presets.physics.hero.jumpSpeed
-    jumped = true
-    jumpReleased = false
-    reqFrameCount++
-    step = requestAnimationFrame(main)
-  } else {
-    keysDown[e.keyCode] = true
-  }
-
-}, false)
-
-window.addEventListener('keyup', (e) => {
-  if (e.keyCode === 38) {
-    jumpReleased = true
-  }
-  delete keysDown[e.keyCode]
-}, false)
-
-const readKey = () => {
-  if (37 in keysDown) { // Player holding left
-    hero.vx -= hero.ax
-  }
-
-  if (39 in keysDown) { // Player holding right
-    hero.vx += hero.ax
-  }
-
-  if (Object.keys(keysDown).length === 0) {
-    // con(hero.vx)
-    hero.vx /= 1.3;
-    if (Math.abs(hero.vx) < 1) {
-      hero.vx = 0
-    }
-  }
-  hero.vy += hero.ay;
-}
-
-const collisionDetection = () => {
-  collisionDirection = {}
-
-  presets.blocks.forEach((block,index) => {
-    const nextX = hero.x + hero.vx
-    const nextY = hero.y + hero.vy
-
-    // if (nextX < block.x + block.width &&
-    //    nextX + hero.width > block.x &&
-    //    nextY < block.y + block.height &&
-    //    hero.height + nextY >= block.y) {
-    //      console.log('con!!')
-    //    }
-        // collision detected!
-
-    const w = (hero.width + block.width)/2
-    const h = (hero.height + block.height)/2
-
-    const heroCX = (nextX + nextX + hero.width)/2
-    const blockCX = (block.x + block.x + block.width)/2
-
-    const heroCY = (nextY + nextY + hero.height)/2
-    const blockCY = (block.y + block.y + block.height)/2
-
-    const dx = heroCX - blockCX;
-    const dy = heroCY - blockCY;
-
-    if (Math.abs(dx) <= w && Math.abs(dy) <= h) {
-      /* collision! */
-      const wy = w * dy;
-      const hx = h * dx;
-
-      if (wy > hx) {
-        if (wy > -hx) {
-          /* collision at the top */
-          collisionDirection.top = block.y + block.height
-        } else {
-          /* on the right */
-          collisionDirection.right = block.x - hero.width
-        }
-      } else {
-        if (wy > -hx) {
-          /* on the left */
-          collisionDirection.left = block.x + block.width
-        } else {
-          /* at the bottom */
-          collisionDirection.bottom = block.y - hero.height
-          jumped = false;
-        }
-      }
-    }
-
-  })
-}
-
 //update game object
-const updatePositions = () => {
-  hero.vx = Math.max(hero.vx, -presets.physics.hero.topRunSpeed)
-  hero.vx = Math.min(hero.vx, presets.physics.hero.topRunSpeed)
+const updatePositions = (collisionDirection) => {
+  const hero = assets.hero
+  const physics = assets.physics
+  const canvas = assets.canvas
 
-  hero.x = Math.min(presets.canvas.width - hero.width, Math.max(0, hero.x + hero.vx))
+  hero.vx = Math.max(hero.vx, -physics.hero.topRunSpeed)
+  hero.vx = Math.min(hero.vx, physics.hero.topRunSpeed)
+
   hero.y = Math.min(hero.y + hero.vy)
 
-  // console.log(collisionDirection)
+  if (hero.x + hero.vx > assets.canvas.width/2 && !collisionDirection.right) {
+    const diff = assets.canvas.width/2 - (hero.x + hero.vx)
+    hero.x = assets.canvas.width/2
+
+    assets.blocks.forEach((block) => {
+      block.x += diff
+    })
+
+  } else {
+    hero.x = Math.max(0, hero.x + hero.vx)
+  }
+
   if (collisionDirection.right) {
     hero.vx = 0
     hero.x = collisionDirection.right
@@ -171,14 +122,18 @@ const updatePositions = () => {
     hero.y = collisionDirection.bottom
   }
 
-  collisionDirection = {}
 }
 
 const render = () => {
-  foreground.ctx.clearRect(0,0, presets.canvas.width, presets.canvas.height)
+  const canvas = assets.canvas
+  const hero = assets.hero
+
+  foreground.ctx.clearRect(0,0, canvas.width, canvas.height)
+  background.ctx.clearRect(0,0, canvas.width, canvas.height)
+
   foreground.ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height)
 
-  presets.blocks.forEach((block) => {
+  assets.blocks.forEach((block) => {
     background.ctx.strokeRect(block.x, block.y, block.width, block.height)
   })
 
@@ -190,8 +145,8 @@ const render = () => {
 }
 
 let main = () => {
-  readKey()
-  collisionDetection()
-  updatePositions()
+  util.readKey(assets.hero)
+  const collisionDirection = physics.collisionDetection(assets.hero, assets.blocks)
+  updatePositions(collisionDirection)
   render()
 }
