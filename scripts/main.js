@@ -6,7 +6,6 @@ let presets;
 let hero;
 let collisionDirection = {};
 let step;
-let pause = false;
 let jumped = false;
 let jumpReleased = true
 const keysDown = {}
@@ -28,12 +27,10 @@ requirejs(['helper/util', 'helper/assets'], (util, assets) => {
   util.loadImage(assets.characters.hero.source)
   .then(hrImg => {
     heroImage = hrImg;
+
+    // start game
+    main()
   })
-
-  // start game
-  renderOnce()
-  main()
-
 })
 
 const heroJumpable = () => {
@@ -177,20 +174,13 @@ const updatePositions = () => {
   collisionDirection = {}
 }
 
-const renderOnce = () => {
-  background.ctx.fillStyle = 'red'
+const render = () => {
+  foreground.ctx.clearRect(0,0, presets.canvas.width, presets.canvas.height)
+  foreground.ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height)
+
   presets.blocks.forEach((block) => {
     background.ctx.strokeRect(block.x, block.y, block.width, block.height)
   })
-}
-
-const render = () => {
-  if (heroImage) {
-    // con(hero.x)
-    // con(hero.y)
-    foreground.ctx.clearRect(0,0, presets.canvas.width, presets.canvas.height)
-    foreground.ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height)
-  }
 
   if (reqFrameCount <= 1) {
     step = requestAnimationFrame(main)
