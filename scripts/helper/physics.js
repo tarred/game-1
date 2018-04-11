@@ -11,11 +11,11 @@ define(() => {
         const w = (hero.width + block.width)/2
         const h = (hero.height + block.height)/2
 
-        const heroCX = (nextX + nextX + hero.width)/2
-        const blockCX = (block.x + block.x + block.width)/2
+        const heroCX = nextX + (nextX + hero.width)/2
+        const blockCX = block.x + (block.x + block.width)/2
 
-        const heroCY = (nextY + nextY + hero.height)/2
-        const blockCY = (block.y + block.y + block.height)/2
+        const heroCY = nextY + (nextY + hero.height)/2
+        const blockCY = block.y + (block.y + block.height)/2
 
         const dx = heroCX - blockCX;
         const dy = heroCY - blockCY;
